@@ -5,7 +5,7 @@ project(MyGame)
 add_executable(MyGame main.cpp)
 
 # Find SFML
-find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
+find_package(SFML 3.0.1 COMPONENTS graphics window system audio REQUIRED)
 
 
 # Link SFML
