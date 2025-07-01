@@ -223,7 +223,7 @@ MyGame_IS_TOP_LEVEL:STATIC=ON
 MyGame_SOURCE_DIR:STATIC=/Users/marchuchu/Mario/code_1/First_game
 
 //The directory containing a CMake configuration file for SFML.
-SFML_DIR:PATH=/opt/homebrew/lib/cmake/SFML
+SFML_DIR:PATH=SFML_DIR-NOTFOUND
 
 
 ########################
