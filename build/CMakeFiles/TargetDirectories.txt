@@ -1,0 +1,3 @@
+/Users/marchuchu/Mario/code_1/First_game/build/CMakeFiles/MyGame.dir
+/Users/marchuchu/Mario/code_1/First_game/build/CMakeFiles/edit_cache.dir
+/Users/marchuchu/Mario/code_1/First_game/build/CMakeFiles/rebuild_cache.dir
