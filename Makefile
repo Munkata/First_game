@@ -4,12 +4,17 @@ executable := MyGame
 .PHONY: all clean run rebuild
 
 all:
-	mkdir -p $(build_dir) && cd $(build_dir) && cmake .. && make
+	mkdir -p $(build_dir) && \
+	cd $(build_dir) && \
+	cmake .. && \
+	make
 
-run:
+run: all
 	./$(build_dir)/$(executable)
 
 clean:
 	rm -rf $(build_dir)
 
-rebuild: clean all run
+rebuild:
+	$(MAKE) clean
+	$(MAKE) run
