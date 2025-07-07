@@ -1,54 +1,62 @@
 #include <SFML/Graphics.hpp>
 #define WINDOW_X 800
 #define WINDOW_y 600
-int main() {
-    sf::Color beige(203, 190, 179); //background
-    sf::Color reddish(209, 73, 91); //player_1
-    sf::Color grey(73, 71, 91); //player_2
-    sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_y), "My 2D Game");
+void initGameObjects(sf::RectangleShape& topLine,
+                     sf::RectangleShape& bottomLine,
+                     sf::RectangleShape& leftLine,
+                     sf::RectangleShape& rightLine,
+                     sf::RectangleShape& centerline,
+                     sf::RectangleShape& player_1,
+                     sf::RectangleShape& player_2,
+                     sf::CircleShape& ball)
+{
+    const int margin = 10;
+    const int width = WINDOW_X;
+    const int height = WINDOW_y;
+    const float ball_radius = 10.f;
 
-        // Create the border lines
-    sf::RectangleShape topLine(sf::Vector2f(WINDOW_X-2*10, 2));
-    topLine.setPosition(10, 10);
+    // Border lines
+    topLine.setSize(sf::Vector2f(width - 2 * margin, 2));
+    topLine.setPosition(margin, margin);
     topLine.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape bottomLine(sf::Vector2f(WINDOW_X-2*10, 2));
-    bottomLine.setPosition(10, WINDOW_y-10);
+    bottomLine.setSize(sf::Vector2f(width - 2 * margin, 2));
+    bottomLine.setPosition(margin, height - margin);
     bottomLine.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape leftLine(sf::Vector2f(2, WINDOW_y-2*10));
-    leftLine.setPosition(10, 10);
+    leftLine.setSize(sf::Vector2f(2, height - 2 * margin));
+    leftLine.setPosition(margin, margin);
     leftLine.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape rightLine(sf::Vector2f(2, WINDOW_y-2*10));
-    rightLine.setPosition(WINDOW_X-10, 10);
+    rightLine.setSize(sf::Vector2f(2, height - 2 * margin));
+    rightLine.setPosition(width - margin, margin);
     rightLine.setFillColor(sf::Color::Black);
 
-    sf::RectangleShape centerline;
-    centerline.setSize(sf::Vector2f(2, WINDOW_y - 2*10));
-    centerline.setPosition(((WINDOW_X - 2) / 2) + 4, 10);
+    centerline.setSize(sf::Vector2f(2, height - 2 * margin));
+    centerline.setPosition((width / 2) - 1, margin); // center-adjusted
     centerline.setFillColor(sf::Color::Black);
 
-    sf::CircleShape centercircle;
-    centercircle.setRadius(100);
-    centercircle.setPosition(WINDOW_X /2 -95, WINDOW_y / 2 -98 );
-    centercircle.setOutlineThickness(2);
-    centercircle.setOutlineColor(sf::Color::Black);
-    centercircle.setFillColor(sf::Color::Transparent);
+    player_1.setSize(sf::Vector2f(20.f, 150.f));
+    player_1.setFillColor(sf::Color(209, 73, 91)); // reddish
+    player_1.setPosition(margin * 2, margin);
 
+    player_2.setSize(sf::Vector2f(20.f, 150.f));
+    player_2.setFillColor(sf::Color(73, 71, 91)); // grey
+    player_2.setPosition(width - (margin * 4), margin);
 
-    sf::RectangleShape player_1(sf::Vector2f(20.f, 150.f));//width xheight
-    // sf::CircleShape player_1(25.0f); // Simple player_1 circle
-    player_1.setFillColor(reddish);
-    player_1.setPosition(5, 10);
-
-    sf::RectangleShape player_2(sf::Vector2f(20.f, 150.f));//width xheight
-    player_2.setFillColor(grey);
-    player_2.setPosition(WINDOW_X-5, 0);
-
-    sf::CircleShape ball(10.0f);
+    ball.setRadius(ball_radius);
     ball.setFillColor(sf::Color::Green);
-    ball.setPosition(WINDOW_X/2, WINDOW_y/2);
+    ball.setPosition(width / 2 - ball_radius, height / 2 - ball_radius);
+
+}
+int main() {
+    sf::Color beige(203, 190, 179); //background
+    sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_y), "My 2D Game");
+    sf::RectangleShape topLine, bottomLine, leftLine, rightLine, centerline;
+    sf::RectangleShape player_1, player_2;
+    sf::CircleShape ball;
+    initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
+                    player_1, player_2, ball);
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -63,16 +71,19 @@ int main() {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             player_1.move(0,  0.1);
         }
-
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            player_2.move(0, -0.1);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            player_2.move(0,  0.1);
+        }
+        
         window.clear(beige);
-    
         window.draw(topLine);
         window.draw(bottomLine);
         window.draw(leftLine);
         window.draw(rightLine);
-        window.draw(centercircle);
         window.draw(centerline);
-
         window.draw(player_1);
         window.draw(player_2);
         window.draw(ball);//order of draw matters
