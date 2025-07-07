@@ -8,7 +8,8 @@ void initGameObjects(sf::RectangleShape& topLine,
                      sf::RectangleShape& centerline,
                      sf::RectangleShape& player_1,
                      sf::RectangleShape& player_2,
-                     sf::CircleShape& ball)
+                     sf::CircleShape& ball,
+                    float margin_botop)
 {
     const int margin = 10;
     const int width = WINDOW_X;
@@ -38,11 +39,11 @@ void initGameObjects(sf::RectangleShape& topLine,
 
     player_1.setSize(sf::Vector2f(20.f, 150.f));
     player_1.setFillColor(sf::Color(209, 73, 91)); // reddish
-    player_1.setPosition(margin * 2, margin);
+    player_1.setPosition(margin * 2, margin+margin_botop);
 
     player_2.setSize(sf::Vector2f(20.f, 150.f));
     player_2.setFillColor(sf::Color(73, 71, 91)); // grey
-    player_2.setPosition(width - (margin * 4), margin);
+    player_2.setPosition(width - (margin * 4), margin+margin_botop);
 
     ball.setRadius(ball_radius);
     ball.setFillColor(sf::Color::Green);
@@ -55,8 +56,11 @@ int main() {
     sf::RectangleShape topLine, bottomLine, leftLine, rightLine, centerline;
     sf::RectangleShape player_1, player_2;
     sf::CircleShape ball;
+    float margin_botop=5;
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
-                    player_1, player_2, ball);
+                    player_1, player_2, ball,margin_botop);
+    float speed_player=0.3f;
+    
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -66,18 +70,25 @@ int main() {
 
         // Movement
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            player_1.move(0, -0.1);
+            if(player_1.getPosition().y > topLine.getPosition().y + topLine.getSize().y + margin_botop){
+                player_1.move(0, -speed_player);
+            }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            player_1.move(0,  0.1);
+            if(player_1.getPosition().y +player_1.getSize().y> bottomLine.getPosition().y + bottomLine.getSize().y + margin_botop){
+                player_1.move(0,  speed_player);
+            }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            player_2.move(0, -0.1);
+            if(player_2.getPosition().y < topLine.getPosition().y + topLine.getSize().y + margin_botop){
+                player_2.move(0, -speed_player);
+            }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            player_2.move(0,  0.1);
+            player_2.move(0,  speed_player);
         }
         
+        //display stuff
         window.clear(beige);
         window.draw(topLine);
         window.draw(bottomLine);
