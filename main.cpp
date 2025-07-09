@@ -3,6 +3,7 @@
 #include <thread>
 #define WINDOW_X 800
 #define WINDOW_y 600
+const float ball_radius = 10.f;
 void initGameObjects(sf::RectangleShape& topLine,
                      sf::RectangleShape& bottomLine,
                      sf::RectangleShape& leftLine,
@@ -16,7 +17,6 @@ void initGameObjects(sf::RectangleShape& topLine,
     const int margin = 10;
     const int width = WINDOW_X;
     const int height = WINDOW_y;
-    const float ball_radius = 10.f;
 
     // Border lines
     topLine.setSize(sf::Vector2f(width - 2 * margin, 2));
@@ -62,25 +62,49 @@ int main() {
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
                     player_1, player_2, ball,margin_botop);
     float speed_player=0.3f;
-    float x_speed_ball=0.05f;
-    float y_speed_ball=0.05f;
+    float x_speed_ball=0.08f;
+    float y_speed_ball=0.08f;
+    int score_1=0;
+    int score_2=0;
+    bool game_started=false;
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        ball.move(x_speed_ball,y_speed_ball);
-        //ball collison with walls 
-        if(ball.getPosition().y <= topLine.getPosition().y + topLine.getSize().y||ball.getPosition().y + ball.getGlobalBounds().height+1>= bottomLine.getPosition().y + bottomLine.getSize().y){
-                y_speed_ball=-y_speed_ball;
-                // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
+            game_started = true;
         }
-        //ball collison with player
-        if (ball.getGlobalBounds().intersects(player_2.getGlobalBounds())||ball.getGlobalBounds().intersects(player_1.getGlobalBounds())){
+        if(game_started){
+            ball.move(x_speed_ball,y_speed_ball);
+            printf("speed_x:%2f speed_y:%2f\n",x_speed_ball,y_speed_ball);
+            //ball collision with points
+            if(ball.getGlobalBounds().intersects(rightLine.getGlobalBounds())){
+                ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
                 x_speed_ball=-x_speed_ball;
-                // printf("im hit \n");
-                // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
+                game_started=false;
+            }
+            if(ball.getGlobalBounds().intersects(leftLine.getGlobalBounds())){
+                ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
+                x_speed_ball=-x_speed_ball;
+                game_started=false;
+            }
+            //ball collison with walls 
+            if(ball.getPosition().y <= topLine.getPosition().y + topLine.getSize().y
+            ||ball.getPosition().y + ball.getGlobalBounds().height+1>= bottomLine.getPosition().y + bottomLine.getSize().y){
+                    y_speed_ball=-y_speed_ball;
+                    // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
+            }
+            //ball collison with player
+            if (ball.getGlobalBounds().intersects(player_2.getGlobalBounds())||ball.getGlobalBounds().intersects(player_1.getGlobalBounds())){
+                    // if(x_speed_ball<0){x_speed_ball=x_speed_ball-0.1;}else{x_speed_ball=x_speed_ball-0.1;}
+                    x_speed_ball=-x_speed_ball;
+                    // printf("im hit \n");
+                    // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
+            }
+
         }
         // Movement
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -89,7 +113,7 @@ int main() {
             }
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            if(player_1.getPosition().y +player_1.getSize().y< bottomLine.getPosition().y + bottomLine.getSize().y - margin_botop){
+            if(player_1.getPosition().y +player_1.getSize().y< bottomLine.getPosition().y + bottomLine.getSize().y -  margin_botop){
                 player_1.move(0,  speed_player);
             }
         }
@@ -103,7 +127,7 @@ int main() {
                 player_2.move(0,  speed_player);
             }
         }
-        
+    
         //display stuff
         window.clear(beige);
         window.draw(topLine);
