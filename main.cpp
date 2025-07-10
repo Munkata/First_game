@@ -59,15 +59,58 @@ int main() {
     sf::RectangleShape player_1, player_2;
     sf::CircleShape ball;
     float margin_botop=5;
+    sf::Font font;
+    if (!font.loadFromFile("/Users/marchuchu/Mario/code_1/First_game/FiraCodeNerdFontMono-SemiBold.ttf"))
+    {
+        printf ("Error loading font\n");
+        return -1;
+    }
+    sf::Text pressSpace;
+    pressSpace.setFont(font);
+    pressSpace.setString("Press Space to \nPlay the game!");
+    pressSpace.setCharacterSize(80);
+    // 1. Get the text bounds
+    sf::FloatRect textBounds = pressSpace.getLocalBounds();
+
+    // 2. Set the origin to the center of the text
+    pressSpace.setOrigin(textBounds.left + textBounds.width / 2.0f,
+                     textBounds.top + textBounds.height / 2.0f);
+
+    // 3. Position it at the center of the window
+    pressSpace.setPosition(WINDOW_X / 2.0f, WINDOW_y / 2.0f);
+
+    // 4. Optional: Make it semi-transparent white
+    pressSpace.setFillColor(sf::Color(255, 255, 255, 128));
+// Score 1 — center in the left half
+    sf::Text score_p1;
+    int score_1=0;
+    score_p1.setFont(font);
+    score_p1.setString("Score 1: " + std::to_string(score_1));
+    score_p1.setCharacterSize(40);
+    sf::FloatRect bounds1 = score_p1.getLocalBounds();
+    score_p1.setOrigin(bounds1.left + bounds1.width / 2.f, 0.f);
+    score_p1.setPosition(WINDOW_X * 1.f / 4.f, margin_botop);
+    score_p1.setFillColor(sf::Color(255, 255, 255, 128));
+
+    // Score 2 — center in the right half
+    sf::Text score_p2;
+    int score_2=0;
+    score_p2.setFont(font);
+    score_p2.setString("Score 2: " + std::to_string(score_2));
+    score_p2.setCharacterSize(40);
+    sf::FloatRect bounds2 = score_p2.getLocalBounds();
+    score_p2.setOrigin(bounds2.left + bounds2.width / 2.f, 0.f);
+    score_p2.setPosition(WINDOW_X * 3.f / 4.f, margin_botop);
+    score_p2.setFillColor(sf::Color(255, 255, 255, 128));
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
                     player_1, player_2, ball,margin_botop);
-    float speed_player=0.3f;
+    float speed_player=0.2f;
     float x_speed_ball=0.08f;
+    //implement game time
     float y_speed_ball=0.08f;
-    int score_1=0;
-    int score_2=0;
     bool game_started=false;
     while (window.isOpen()) {
+        
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -79,17 +122,21 @@ int main() {
         }
         if(game_started){
             ball.move(x_speed_ball,y_speed_ball);
-            printf("speed_x:%2f speed_y:%2f\n",x_speed_ball,y_speed_ball);
+            // printf("speed_x:%2f speed_y:%2f\n",x_speed_ball,y_speed_ball);
             //ball collision with points
             if(ball.getGlobalBounds().intersects(rightLine.getGlobalBounds())){
                 ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
                 x_speed_ball=-x_speed_ball;
                 game_started=false;
+                score_1++;
+                score_p1.setString("Score 1: " + std::to_string(score_1));
             }
             if(ball.getGlobalBounds().intersects(leftLine.getGlobalBounds())){
                 ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
                 x_speed_ball=-x_speed_ball;
                 game_started=false;
+                score_2++;
+                score_p2.setString("Score 2: " + std::to_string(score_2));
             }
             //ball collison with walls 
             if(ball.getPosition().y <= topLine.getPosition().y + topLine.getSize().y
@@ -99,9 +146,7 @@ int main() {
             }
             //ball collison with player
             if (ball.getGlobalBounds().intersects(player_2.getGlobalBounds())||ball.getGlobalBounds().intersects(player_1.getGlobalBounds())){
-                    // if(x_speed_ball<0){x_speed_ball=x_speed_ball-0.1;}else{x_speed_ball=x_speed_ball-0.1;}
                     x_speed_ball=-x_speed_ball;
-                    // printf("im hit \n");
                     // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
             }
 
@@ -138,6 +183,12 @@ int main() {
         window.draw(player_1);
         window.draw(player_2);
         window.draw(ball);//order of draw matters
+        if(!game_started)
+        {
+            window.draw(pressSpace);
+        }
+        window.draw(score_p1);
+        window.draw(score_p2);
         window.display();
     }
 
