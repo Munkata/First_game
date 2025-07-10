@@ -81,33 +81,36 @@ int main() {
 
     // 4. Optional: Make it semi-transparent white
     pressSpace.setFillColor(sf::Color(255, 255, 255, 128));
-// Score 1 — center in the left half
+
+    // Score 1 — center in the left half
     sf::Text score_p1;
     int score_1=0;
     score_p1.setFont(font);
     score_p1.setString("Score 1: " + std::to_string(score_1));
-    score_p1.setCharacterSize(40);
+    score_p1.setCharacterSize(30);
     sf::FloatRect bounds1 = score_p1.getLocalBounds();
     score_p1.setOrigin(bounds1.left + bounds1.width / 2.f, 0.f);
     score_p1.setPosition(WINDOW_X * 1.f / 4.f, margin_botop);
-    score_p1.setFillColor(sf::Color(255, 255, 255, 128));
+    score_p1.setFillColor(sf::Color(73, 71, 91, 100));
 
     // Score 2 — center in the right half
     sf::Text score_p2;
     int score_2=0;
     score_p2.setFont(font);
     score_p2.setString("Score 2: " + std::to_string(score_2));
-    score_p2.setCharacterSize(40);
+    score_p2.setCharacterSize(30);
     sf::FloatRect bounds2 = score_p2.getLocalBounds();
     score_p2.setOrigin(bounds2.left + bounds2.width / 2.f, 0.f);
     score_p2.setPosition(WINDOW_X * 3.f / 4.f, margin_botop);
-    score_p2.setFillColor(sf::Color(255, 255, 255, 128));
+    score_p2.setFillColor(sf::Color(73, 71, 91, 100));
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
                     player_1, player_2, ball,margin_botop);
     float speed_player=0.2f;
     float x_speed_ball=0.08f;
-    //implement game time
     float y_speed_ball=0.08f;
+    //implement game time
+    sf::Clock clock;
+    float seconds = clock.getElapsedTime().asSeconds();
     bool game_started=false;
     while (window.isOpen()) {
         
