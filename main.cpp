@@ -103,34 +103,55 @@ int main() {
     score_p2.setOrigin(bounds2.left + bounds2.width / 2.f, 0.f);
     score_p2.setPosition(WINDOW_X * 3.f / 4.f, margin_botop);
     score_p2.setFillColor(sf::Color(73, 71, 91, 100));
+
+    sf::Text timer;
+    float overall_time = 0.0f;
+    timer.setFont(font);
+    timer.setString("Time: " + std::to_string(static_cast<int>(overall_time)));
+    timer.setCharacterSize(30);
+    sf::FloatRect bounds3 = timer.getLocalBounds();
+    timer.setOrigin(bounds3.left + bounds3.width / 2.f, 0.f);
+    timer.setPosition(WINDOW_X/2+bounds3.left, WINDOW_y* 3/4);
+    timer.setFillColor(sf::Color(73, 71, 91, 100));
+
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
                     player_1, player_2, ball,margin_botop);
     float speed_player=0.2f;
     float x_speed_ball=0.08f;
     float y_speed_ball=0.08f;
+    float acceleration = 0.03f; // adjust to taste
     //implement game time
     sf::Clock clock;
-    float seconds = clock.getElapsedTime().asSeconds();
+    float round_time = 0.0f;
     bool game_started=false;
     while (window.isOpen()) {
-        
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&&game_started==false&&window.hasFocus())
+        {   
             game_started = true;
+            clock.restart(); // restart the timer as the round starts
         }
         if(game_started){
-            ball.move(x_speed_ball,y_speed_ball);
-            // printf("speed_x:%2f speed_y:%2f\n",x_speed_ball,y_speed_ball);
+            round_time = clock.getElapsedTime().asSeconds();
+            float time_factor = 1.0f + acceleration * round_time;
+            float adjusted_x_speed = x_speed_ball * time_factor;
+            float adjusted_y_speed = y_speed_ball * time_factor;
+            timer.setString("Time: " + std::to_string(static_cast<int>(overall_time+round_time )));
+            // printf("%2f\n",adjusted_x_speed);
+            ball.move(adjusted_x_speed, adjusted_y_speed);
             //ball collision with points
             if(ball.getGlobalBounds().intersects(rightLine.getGlobalBounds())){
                 ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
                 x_speed_ball=-x_speed_ball;
                 game_started=false;
+
+                round_time = clock.getElapsedTime().asSeconds();
+                overall_time += round_time;
+                // printf("⏱ Round duration: %.2f seconds | 🕒 Total time: %.2f seconds\n", round_time, overall_time);
                 score_1++;
                 score_p1.setString("Score 1: " + std::to_string(score_1));
             }
@@ -138,6 +159,9 @@ int main() {
                 ball.setPosition(WINDOW_X / 2 - ball_radius, WINDOW_y / 2 - ball_radius);
                 x_speed_ball=-x_speed_ball;
                 game_started=false;
+                round_time = clock.getElapsedTime().asSeconds();
+                overall_time += round_time;
+                printf("⏱ Round duration: %.2f seconds | 🕒 Total time: %.2f seconds\n", round_time, overall_time);
                 score_2++;
                 score_p2.setString("Score 2: " + std::to_string(score_2));
             }
@@ -153,28 +177,31 @@ int main() {
                     // std::this_thread::sleep_for(std::chrono::milliseconds(3000)); // sleep for 1 second testing
             }
 
+        }else{
+            round_time = 0.0f;
         }
         // Movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            if(player_1.getPosition().y > topLine.getPosition().y + topLine.getSize().y + margin_botop){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && window.hasFocus()) {
+            if (player_1.getPosition().y > topLine.getPosition().y + topLine.getSize().y + margin_botop) {
                 player_1.move(0, -speed_player);
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            if(player_1.getPosition().y +player_1.getSize().y< bottomLine.getPosition().y + bottomLine.getSize().y -  margin_botop){
-                player_1.move(0,  speed_player);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && window.hasFocus()) {
+            if (player_1.getPosition().y + player_1.getSize().y < bottomLine.getPosition().y + bottomLine.getSize().y - margin_botop) {
+                player_1.move(0, speed_player);
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-            if(player_2.getPosition().y > topLine.getPosition().y + topLine.getSize().y + margin_botop){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && window.hasFocus()) {
+            if (player_2.getPosition().y > topLine.getPosition().y + topLine.getSize().y + margin_botop) {
                 player_2.move(0, -speed_player);
             }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            if(player_2.getPosition().y +player_2.getSize().y< bottomLine.getPosition().y + bottomLine.getSize().y - margin_botop){
-                player_2.move(0,  speed_player);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && window.hasFocus()) {
+            if (player_2.getPosition().y + player_2.getSize().y < bottomLine.getPosition().y + bottomLine.getSize().y - margin_botop) {
+                player_2.move(0, speed_player);
             }
         }
+
     
         //display stuff
         window.clear(beige);
@@ -192,6 +219,7 @@ int main() {
         }
         window.draw(score_p1);
         window.draw(score_p2);
+        window.draw(timer);
         window.display();
     }
 
