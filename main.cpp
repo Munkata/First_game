@@ -116,6 +116,7 @@ int main() {
 
     initGameObjects(topLine, bottomLine, leftLine, rightLine, centerline,
                     player_1, player_2, ball,margin_botop);
+
     float speed_player=0.2f;
     float x_speed_ball=0.08f;
     float y_speed_ball=0.08f;
@@ -161,7 +162,7 @@ int main() {
                 game_started=false;
                 round_time = clock.getElapsedTime().asSeconds();
                 overall_time += round_time;
-                printf("⏱ Round duration: %.2f seconds | 🕒 Total time: %.2f seconds\n", round_time, overall_time);
+                printf("Round duration: %.2f seconds |  Total time: %.2f seconds\n", round_time, overall_time);
                 score_2++;
                 score_p2.setString("Score 2: " + std::to_string(score_2));
             }
