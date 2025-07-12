@@ -4,6 +4,68 @@
 #define WINDOW_X 800
 #define WINDOW_y 600
 const float ball_radius = 10.f;
+
+/* 
+1. There are a bunch of parameters here which could be encapsulated in a class and initialized in a 
+constructor. This also gives you control over the way each object is destroyed in the constructor(this could
+be unnecessary but good to know generally).
+
+2. There is a bunch of repeated code: 
+
+    topLine.setSize(sf::Vector2f(width - 2 * margin, 2));
+    topLine.setPosition(margin, margin);
+    topLine.setFillColor(sf::Color::Black);
+
+    bottomLine.setSize(sf::Vector2f(width - 2 * margin, 2));
+    bottomLine.setPosition(margin, height - margin);
+    bottomLine.setFillColor(sf::Color::Black);
+
+These are doing the same thing on the same type, but with slightly different parameters. It could be
+benifical to have a static method or function which takes in the respective parameters and reduces all 
+these repeated initializations in a single function call.
+
+Also in C++ you can check out constexpr and generally avoid macros. The main issue with macros(which are 
+used widely in C) is that it's basically direct text substitution so no type checking no compiler help, just
+a fuck you if you screw something up. A big help in C++ is the compiler type checking, use that as much as 
+possible - unlike C, in C++ not everything is a fucking int.
+
+3. A fun thing you can try to do, which I'm not 100% sure applicable hear at all, but one time I was developing 
+an embedded space invaders on a fuckass LCD display, the issue was that updating the entire display every iteration
+in my while loop was too expensive and the LCD display was bugging. To fix this I first checked what exactly on the display
+has changed and only redrew that part - not 100% sure how the game works, but for example instead of redrawing the entire display
+only change the color of the pixels in accordance to where the new position of the pong ball is(same goes for the paddles).
+
+4.Also I think that some of the functionalities in the while loop can be encapsulated in the game class.
+
+5. The Score 1 and Score 2 seem repetitive, this doesn't necessarily mean that this should be encapsulated in 
+class, but it seems reasonable given that there is a state(the score represents the state of the Score class), 
+and put the repetitive initialization in a constructor and add a method for incremention. You could even put the
+condition(whether the score should be incremented at all) check in this class, or keep it outside. You can think
+about how you should do that, with my understanding(or lack thereof) of the code I don't think either is a mistake.
+
+6. Also: 
+    const int width = WINDOW_X;
+    const int height = WINDOW_y;
+, it might be better for this to be either a global constexpr or even better use the macro itself(if you decide
+not to use constexpr), there isn't much point in having a macro or global contexpr and then saying, oh hey this
+const int is equal to this macro or constexpr - you're just doing the same thing twice, and it's a but confusing 
+when reading the code.
+
+7. What the fuck is going on here:
+    sf::Text timer;
+    float overall_time = 0.0f;
+    timer.setFont(font);
+    timer.setString("Time: " + std::to_string(static_cast<int>(overall_time)));
+Here's what a normal person sees: we have float, which is then statically casted to an int, this is actually not 
+a bad practice, because static cast gives you some compile time protections unlike c-style casts(dynamic_cast I 
+think is similar to c-style casts but I'm not 100% if they're exactly the same). But then we use that
+in a to_string, when to_string supports floats, if there are issues with formatting, then use std::format.
+
+8. I don't see anything else as of right now, I'll take another look tmrw morning and create a new pull request or
+add a commit to this one.
+
+
+*/
 void initGameObjects(sf::RectangleShape& topLine,
                      sf::RectangleShape& bottomLine,
                      sf::RectangleShape& leftLine,
